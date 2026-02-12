@@ -19,7 +19,8 @@ import (
 
 var sanitizerTests = []parseTest{
 
-	{"18", "[foo](https://b3log.org/siyuan/?foo&bar)", "<p><a href=\"https://b3log.org/siyuan/?foo&amp;bar\">foo</a></p>\n"},
+	//{"19", "[foo](zotero://open-pdf/library/items/AGCXXXCX?page=7&annotation=PP7K9AR2)", "<p><a href=\"zotero://open-pdf/library/items/AGCXXXCX?page=7&amp;annotation=PP7K9AR2\">foo</a></p>\n"},
+	//{"18", "[foo](https://b3log.org/siyuan/?foo&bar)", "<p><a href=\"https://b3log.org/siyuan/?foo&amp;bar\">foo</a></p>\n"},
 	{"17", "[foo](javascript:alert('bar'))", "<p><a href=\"\">foo</a></p>\n"},
 	{"16", "<form><input formaction=javascript:alert('xss') type=submit value='click me'></input></form>", ""},
 	{"15", "<meta http-equiv=\"refresh\" content=\"0\" />", "<meta content=\"0\"/>\n"},

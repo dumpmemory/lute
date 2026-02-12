@@ -19,27 +19,15 @@ import (
 	"github.com/88250/lute/html/atom"
 )
 
-func TagSrcStr(tag string) string {
-	srcIndex := strings.Index(tag, "src=\"")
+func TagAttrVal(tagStr, attr string) string {
+	srcIndex := strings.Index(tagStr, attr+"=\"")
 	if 0 > srcIndex {
 		return ""
 	}
 
-	src := tag[srcIndex+len("src=\""):]
+	src := tagStr[srcIndex+len(attr+"=\""):]
 	src = src[:strings.Index(src, "\"")]
 	src = strings.ReplaceAll(src, "&amp;", "&")
-	return src
-}
-
-func TagSrc(tag []byte) []byte {
-	srcIndex := bytes.Index(tag, []byte("src=\""))
-	if 0 > srcIndex {
-		return nil
-	}
-
-	src := tag[srcIndex+len("src=\""):]
-	src = src[:bytes.Index(src, []byte("\""))]
-	src = bytes.ReplaceAll(src, []byte("&amp;"), []byte("&"))
 	return src
 }
 

@@ -1023,7 +1023,11 @@ func (r *HtmlRenderer) renderImage(node *ast.Node, entering bool) ast.WalkStatus
 				r.Write(html.EscapeHTML(util.StrToBytes(r.Options.ImageLazyLoading)))
 				r.WriteString("\" data-src=\"")
 			}
-			r.Write(html.EscapeHTML(destTokens))
+			destTokens = html.EscapeHTML(destTokens)
+			if r.Options.Sanitize {
+				destTokens = util.StrToBytes(SanitizeLinkDest(string(destTokens)))
+			}
+			r.Write(destTokens)
 			r.WriteString("\" alt=\"")
 		}
 		r.DisableTags++
@@ -1067,15 +1071,12 @@ func (r *HtmlRenderer) renderLink(node *ast.Node, entering bool) ast.WalkStatus 
 
 		dest := node.ChildByType(ast.NodeLinkDest)
 		destTokens := dest.Tokens
-		if r.Options.Sanitize {
-			tokens := bytes.TrimSpace(destTokens)
-			tokens = bytes.ToLower(tokens)
-			if bytes.HasPrefix(tokens, []byte("javascript:")) {
-				destTokens = nil
-			}
-		}
 		destTokens = r.LinkPath(destTokens)
-		attrs := [][]string{{"href", util.BytesToStr(html.EscapeHTML(destTokens))}}
+		destTokens = html.EscapeHTML(destTokens)
+		if r.Options.Sanitize {
+			destTokens = util.StrToBytes(SanitizeLinkDest(string(destTokens)))
+		}
+		attrs := [][]string{{"href", util.BytesToStr(destTokens)}}
 		if title := node.ChildByType(ast.NodeLinkTitle); nil != title && nil != title.Tokens {
 			attrs = append(attrs, []string{"title", util.BytesToStr(html.EscapeHTML(title.Tokens))})
 		}

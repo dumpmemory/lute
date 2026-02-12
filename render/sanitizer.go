@@ -34,19 +34,18 @@ var setOfElementsToSkipContent = map[string]interface{}{
 	"title":    nil,
 }
 
-func SanitizeSrc(src string) string {
-	img := strings.ReplaceAll(src, "\"", "__@QUOTE@__")
-	img = strings.ReplaceAll(img, " ", "__@SPACE@__")
-	img = strings.ReplaceAll(img, "#", "__@HASH@__")
-	img = "<img src=\"" + img + "\"></img>"
-
+func SanitizeLinkDest(src string) string {
+	ret := strings.ReplaceAll(src, "\"", "__@QUOTE@__")
+	ret = strings.ReplaceAll(ret, " ", "__@SPACE@__")
+	ret = strings.ReplaceAll(ret, "#", "__@HASH@__")
+	ret = "<a href=\"" + ret + "\"></a>"
 	sanitizer := newSanitizer()
-	img = sanitizer.Sanitize(img)
-	img = string(util.TagSrcStr((img)))
-	img = strings.ReplaceAll(img, "__@QUOTE@__", "\"")
-	img = strings.ReplaceAll(img, "__@SPACE@__", " ")
-	img = strings.ReplaceAll(img, "__@HASH@__", "#")
-	return img
+	ret = sanitizer.Sanitize(ret)
+	ret = util.TagAttrVal(ret, "href")
+	ret = strings.ReplaceAll(ret, "__@QUOTE@__", "\"")
+	ret = strings.ReplaceAll(ret, "__@SPACE@__", " ")
+	ret = strings.ReplaceAll(ret, "__@HASH@__", "#")
+	return ret
 }
 
 func Sanitize(str string) string {
@@ -66,13 +65,16 @@ func newSanitizer() *bluemonday.Policy {
 	ret.AllowLists()
 	ret.AllowStyling()
 	ret.AllowTables()
+
+	ret.AllowAttrs("href", "target").OnElements("a")
 	ret.AllowAttrs("align").OnElements("p", "div")
 	ret.AllowAttrs("src", "scrolling", "border", "frameborder", "framespacing", "allowfullscreen", "data-subtype", "updated").OnElements("iframe")
 	ret.AllowAttrs("content").OnElements("meta")
-	ret.AllowAttrs("type", "allowscriptaccess").OnElements("embed")
 	ret.AllowAttrs("loading").OnElements("img")
 	ret.AllowAttrs("controls", "autoplay", "loop", "muted", "src").OnElements("video", "audio")
-	ret.AllowElements("details", "summary", "video", "source", "audio", "embed")
+	ret.AllowAttrs("type", "allowscriptaccess").OnElements("embed")
 	ret.AllowAttrs("open").OnElements("details")
+
+	ret.AllowElements("details", "summary")
 	return ret
 }
