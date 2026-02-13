@@ -458,6 +458,13 @@ func (r *BaseRenderer) Tag(name string, attrs [][]string, selfclosing bool) {
 	r.WriteString(name)
 	if 0 < len(attrs) {
 		for _, attr := range attrs {
+			if "src" == attr[0] || "href" == attr[0] {
+				v := strings.TrimSpace(attr[1])
+				if strings.HasPrefix(v, "javascript:") || strings.HasPrefix(v, "data:") {
+					continue
+				}
+			}
+
 			r.WriteString(" " + attr[0] + "=\"" + attr[1] + "\"")
 		}
 	}

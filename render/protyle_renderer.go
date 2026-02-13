@@ -1392,16 +1392,6 @@ func (r *ProtyleRenderer) renderImage(node *ast.Node, entering bool) ast.WalkSta
 		}
 		r.Tag("img", attrs, true)
 
-		buf := r.Writer.Bytes()
-		idx := bytes.LastIndex(buf, []byte("<img src="))
-		imgBuf := buf[idx:]
-		if r.Options.Sanitize {
-			imgBuf = sanitize(imgBuf)
-		}
-		imgBuf = r.tagSrcPath(imgBuf)
-		r.Writer.Truncate(idx)
-		r.Writer.Write(imgBuf)
-
 		r.Tag("span", [][]string{{"class", "protyle-action__drag"}}, false)
 		r.Tag("/span", nil, false)
 

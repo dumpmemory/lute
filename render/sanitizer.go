@@ -29,6 +29,7 @@ func SanitizeLinkDest(src string) string {
 	ret = strings.ReplaceAll(ret, " ", "__@SPACE@__")
 	ret = strings.ReplaceAll(ret, "#", "__@HASH@__")
 	ret = strings.ReplaceAll(ret, "&", "__@AMP@__")
+	ret = strings.ReplaceAll(ret, "|", "__@PIPE@__")
 	ret = "<a href=\"" + ret + "\"></a>"
 	sanitizer := newSanitizer()
 	ret = sanitizer.Sanitize(ret)
@@ -37,6 +38,7 @@ func SanitizeLinkDest(src string) string {
 	ret = strings.ReplaceAll(ret, "__@SPACE@__", " ")
 	ret = strings.ReplaceAll(ret, "__@HASH@__", "#")
 	ret = strings.ReplaceAll(ret, "__@AMP@__", "&")
+	ret = strings.ReplaceAll(ret, "__@PIPE@__", "|")
 	ret = strings.TrimSpace(ret)
 	if strings.HasPrefix(ret, "javascript:") {
 		return ""
@@ -97,10 +99,10 @@ func newSanitizer() *bluemonday.Policy {
 
 	ret.AllowAttrs("href", "target").OnElements("a")
 	ret.AllowAttrs("align").OnElements("p", "div")
-	ret.AllowAttrs("src", "scrolling", "border", "frameborder", "framespacing", "allowfullscreen", "data-subtype", "updated").OnElements("iframe")
+	ret.AllowAttrs("src", "scrolling", "border", "frameborder", "framespacing", "allowfullscreen", "data-subtype", "updated", "style").OnElements("iframe")
 	ret.AllowAttrs("content").OnElements("meta")
-	ret.AllowAttrs("loading").OnElements("img")
-	ret.AllowAttrs("controls", "autoplay", "loop", "muted", "src").OnElements("video", "audio")
+	ret.AllowAttrs("loading", "title", "style").OnElements("img")
+	ret.AllowAttrs("controls", "autoplay", "loop", "muted", "src", "style").OnElements("video", "audio")
 	ret.AllowAttrs("type", "allowscriptaccess").OnElements("embed")
 	ret.AllowAttrs("open").OnElements("details")
 
